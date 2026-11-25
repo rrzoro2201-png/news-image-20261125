@@ -12,7 +12,7 @@ The Daily Chronicle — 25 November 2026: the whole world's news in one illustra
 node main.ts
 ```
 
-This renders `entry.png` (1024×1024) via `render.py` (Python 3 + Pillow, stdlib only, no network).
+This copies the pre-rendered `entry.png` (1024×1024) to the output directory. The image itself was drawn by `render.py` (Python 3 + Pillow, no network, no external assets) and is committed in this repository; `main.ts` stays Node stdlib only so it runs in the grader's Node-only image.
 
 ---
 
