@@ -9,11 +9,11 @@ import math
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1024, 1024
-PAPER = (248, 244, 233)
-INK = (26, 26, 26)
-RULE = (26, 26, 26)
-MUTED = (96, 90, 78)
-RED = (178, 34, 34)
+PAPER = (252, 252, 252)
+INK = (17, 17, 17)
+RULE = (17, 17, 17)
+MUTED = (110, 110, 110)
+RED = (220, 38, 38)
 
 SERIF = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
 SERIF_B = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
@@ -74,11 +74,12 @@ d = ImageDraw.Draw(img)
 MX = 24  # margin
 
 # ---------------------------------------------------------------- masthead
-hline(d, MX, W - MX, 12, 3)
-f_mast = font(SERIF_B, 56)
+d.rectangle([0, 0, W, 10], fill=INK)
+f_mast = font(SANS_B, 48)
 title = "The Daily Chronicle"
 tw = d.textlength(title, font=f_mast)
-d.text(((W - tw) / 2, 16), title, font=f_mast, fill=INK)
+d.text(((W - tw) / 2, 18), title, font=f_mast, fill=INK)
+d.rectangle([(W + tw) / 2 + 12, 30, (W + tw) / 2 + 42, 60], fill=RED)
 hline(d, MX, W - MX, 84, 3)
 f_sub = font(SANS, 12)
 d.text((MX, 90), "No. 329  \u00b7  EST. 2021", font=f_sub, fill=MUTED)
@@ -90,22 +91,20 @@ d.text((W - MX - d.textlength("35 STORIES \u00b7 6 REGIONS", font=f_sub), 90),
 
 # ---------------------------------------------------------------- big numbers
 NUMBERS = [
-    ("+31.5%", "NVIDIA SHARES SURGE AS HUANG RETURNS"),
+    ("+31.5%", "NVIDIA SHARES SURGE"),
     ("700,000", "RUSSIAN TROOPS KILLED IN UKRAINE WAR"),
     ("74,746", "GAZA DEATH TOLL, HEALTH OFFICIALS SAY"),
     ("$43.9B", "CROWDSTRIKE TO BUY ZSCALER"),
 ]
 y0, y1 = 108, 162
-hline(d, MX, W - MX, y0, 1)
 col_w = (W - 2 * MX) / 4
 for i, (num, label) in enumerate(NUMBERS):
     x = MX + i * col_w
-    if i:
-        d.line([(x - 8, y0 + 4), (x - 8, y1 - 4)], fill=(200, 192, 172), width=1)
-    fn = font(SERIF_B, 30)
-    d.text((x, y0 + 4), num, font=fn, fill=RED if i == 0 else INK)
-    para(d, x, y0 + 38, label, font(SANS_B, 9), col_w - 16, fill=MUTED, leading=1)
-hline(d, MX, W - MX, y1, 1)
+    d.rounded_rectangle([x, y0, x + col_w - 10, y1], radius=8,
+                        fill=(242, 242, 242))
+    fn = font(SANS_B, 28)
+    d.text((x + 10, y0 + 5), num, font=fn, fill=RED if i == 0 else INK)
+    para(d, x + 10, y0 + 38, label, font(SANS_B, 9), col_w - 26, fill=MUTED, leading=1)
 
 # ---------------------------------------------------------------- region bar
 y = 168
@@ -113,15 +112,15 @@ x = MX
 f_reg = font(SANS_B, 10)
 for name, color in REGIONS:
     tw = d.textlength(name, font=f_reg)
-    d.rectangle([x, y, x + 10, y + 10], fill=color)
-    d.text((x + 14, y - 1), name, font=f_reg, fill=INK)
-    x += 10 + 14 + tw + 18
+    d.rounded_rectangle([x, y - 2, x + tw + 20, y + 14], radius=8, fill=color)
+    d.text((x + 10, y), name, font=f_reg, fill=(255, 255, 255))
+    x += tw + 20 + 10
 hline(d, MX, W - MX, 186, 2)
 
 # ---------------------------------------------------------------- hero: NVIDIA
 HX, HY, HW, HH = MX, 194, 600, 176
 # illustration panel: dark fab floor, glowing chip, rising chart
-d.rectangle([HX, HY, HX + HW, HY + HH], fill=(12, 26, 20))
+d.rounded_rectangle([HX, HY, HX + HW, HY + HH], radius=12, fill=(12, 26, 20))
 # glow behind chip
 for r, a in [(62, 18), (48, 26), (34, 38)]:
     d.ellipse([HX + 150 - r, HY + 88 - r, HX + 150 + r, HY + 88 + r],
@@ -161,13 +160,13 @@ d.text((HX + 8, HY + HH - 18), "ILLUSTRATION: THE FAB FLOOR, SANTA CLARA",
 TX = HX + HW + 16
 TW = W - MX - TX
 kicker(d, TX, HY + 2, "Markets \u00b7 North America", REGIONS[0][1])
-f_h1 = font(SERIF_B, 30)
+f_h1 = font(SANS_B, 30)
 y = para(d, TX, HY + 20, "THE CHIP KING RETURNS", f_h1, TW, leading=2)
 y = para(d, TX, y + 4,
          "Jensen Huang is back as Nvidia chief after a two-week ouster "
          "\u2014 and Wall Street roared. Shares leapt 31.5%, clawing back "
          "nearly $1 trillion in a single day.",
-         font(SERIF, 12), TW, leading=3)
+         font(SANS, 12), TW, leading=3)
 y = para(d, TX, y + 4,
          "But the comeback comes with a summons: Congress wants answers "
          "on the spy affair and the chips that reached China.",
@@ -213,7 +212,7 @@ d.polygon([(IX + 196, IY + 52), (IX + 210, IY + 30), (IX + 224, IY + 52)],
 d.rectangle([IX, IY + IH - 14, IX + 148, IY + IH], fill=(20, 40, 60))
 d.text((IX + 6, IY + IH - 13), "BENGHAZI HARBOUR, LIBYA",
        font=font(SANS, 8), fill=(230, 240, 245))
-f_h2 = font(SERIF_B, 17)
+f_h2 = font(SANS_B, 18)
 y = para(d, PX, RY + 108, "UKRAINE SINKS RUSSIAN WARSHIP OFF LIBYA",
          f_h2, PW, leading=1)
 para(d, PX, y + 2,
@@ -382,8 +381,8 @@ CONTINENTS = [
      (130, -13), (126, -14), (122, -17), (118, -20)],
 ]
 for poly in CONTINENTS:
-    d.polygon([ll(lon, lat) for lon, lat in poly], fill=(206, 196, 164),
-              outline=(150, 140, 118))
+    d.polygon([ll(lon, lat) for lon, lat in poly], fill=(224, 224, 224),
+              outline=(190, 190, 190))
 DOTS = [
     ("WASHINGTON", -77, 38.9, -4, -14),
     ("LONDON", -0.1, 51.5, -52, -6),
